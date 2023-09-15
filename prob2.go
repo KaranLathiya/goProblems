@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	
 )
 
 type Customer struct {
-	Userid  int
-	Name    string
-	Balance float64
+	Userid  int	`json:"userId"`
+	Name    string `json:"name"`
+	Balance float64 `json:"balance"`
 }
 func balance(id int, Cus1 []Customer) {
 			bal := Cus1[id].Balance
@@ -18,7 +19,7 @@ func balance(id int, Cus1 []Customer) {
 	
 func withdraw(id int, Cus1 []Customer) {
 	fmt.Println("Please the enter the amount of withdraw")
-	var withdraw float64
+	var withdraw float64 
 	fmt.Scanln(&withdraw)
 	bal := Cus1[id].Balance
 	if withdraw>bal{
@@ -91,7 +92,7 @@ func main() {
 		}
 	}
 	// fmt.Println(Cus1)
-	newval, err := json.Marshal(Cus1)
+	newval, err := json.MarshalIndent(Cus1, "", "  ")
 	// fmt.Print(string(newval))
 	filee, errs := os.Create("data.json")
    if errs != nil {
