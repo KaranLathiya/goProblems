@@ -20,7 +20,6 @@ func main(){
 		select {
 		case v, open := <-ch:
 			if !open {
-				
 				fmt.Print(time.Now(),"done")
 				return
 			}
@@ -28,6 +27,15 @@ func main(){
 				fmt.Println(v," is even")
 			} else{
 				fmt.Println(v," is odd")
+			}
+			for i:=2;i<(v/2+1);i++{
+				if v%i==0{
+					fmt.Println(v,"is non-prime")
+					break
+				}	else if i==v/2{
+					fmt.Println(v,"is prime")
+					break
+				}
 			}
 			fmt.Println(time.Now(), "received", v)
 		}

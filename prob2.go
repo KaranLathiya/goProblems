@@ -7,17 +7,17 @@ import (
 	
 )
 
-type Customer struct {
+type User struct {
 	Userid  int	`json:"userId"`
 	Name    string `json:"name"`
 	Balance float64 `json:"balance"`
 }
-func balance(id int, Cus1 []Customer) {
+func balance(id int, Cus1 []User) {
 			bal := Cus1[id].Balance
 			fmt.Printf("Your Balance is %v\n", bal)
 		}
 	
-func withdraw(id int, Cus1 []Customer) {
+func withdraw(id int, Cus1 []User) {
 	fmt.Println("Please the enter the amount of withdraw")
 	var withdraw float64 
 	fmt.Scanln(&withdraw)
@@ -31,7 +31,7 @@ func withdraw(id int, Cus1 []Customer) {
 		fmt.Printf("Withdrawn amount is %v\n Now, Your balance is %v\n",withdraw,Cus1[id].Balance)
 	}
 }
-func deposit(id int, Cus1 []Customer) {
+func deposit(id int, Cus1 []User) {
 	fmt.Println("Please the enter the amount of deposit")
 	var deposit float64
 	fmt.Scanln(&deposit)
@@ -44,9 +44,9 @@ func deposit(id int, Cus1 []Customer) {
 }
 
 func main() {
-	file, _ := os.ReadFile("data.json")
+	file, _ := os.ReadFile("prob2.json")
 	// fmt.Print(string(file))
-	var Cus1 []Customer
+	var Cus1 []User
 	err := json.Unmarshal(file, &Cus1)
 	if err != nil {
 		fmt.Println(err)
@@ -94,7 +94,7 @@ func main() {
 	// fmt.Println(Cus1)
 	newval, err := json.MarshalIndent(Cus1, "", "  ")
 	// fmt.Print(string(newval))
-	filee, errs := os.Create("data.json")
+	filee, errs := os.Create("prob2.json")
    if errs != nil {
       fmt.Println("Failed to create file:", errs)
       return
