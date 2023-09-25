@@ -6,6 +6,7 @@ import (
 	"os"
 	"github.com/xuri/excelize/v2"
 	"strconv"
+	"sort"
 )
 
 type Customer struct{
@@ -38,13 +39,13 @@ func Id(Cus []Customer) int{
 func Read(Cus []Customer){
 	id:=Id(Cus)
 	if id!=-1{
-	fmt.Print(Cus[id])
+	fmt.Println(Cus[id])
 	}
 }
 func Update(Cus []Customer){
 	id:=Id(Cus)
 	if id!=-1{
-		fmt.Print(Cus[id])
+		fmt.Println(Cus[id])
 		Add(Cus[:],id)
 	}
 
@@ -52,7 +53,7 @@ func Update(Cus []Customer){
 func Remove(Cus []Customer){
 	id:=Id(Cus)
 	if id!=-1{
-		fmt.Print(Cus[id])
+		fmt.Println(Cus[id])
 	}
 	Cus = append(Cus[:id], Cus[id+1:len(Cus)]...)
 	fmt.Printf("Details successfully deleted",)
@@ -91,14 +92,30 @@ func Add(Cus []Customer,code int){
 		}
 	
 }
+func SortFullName(Cus []Customer){
+			// objs.sort((a,b) => a.last_nom - b.last_nom)
+			// sort.Strings(Cus[3].FullName)
+			sort.Slice(Cus, func(i, j int) bool {
+				return Cus[i].FullName < Cus[j].FullName
+			  })
+			  fmt.Println("Data is sorted in ascending order of FullName")
+			  for i := range Cus{
+				fmt.Println(Cus[i], "\t")
+			  }
+			  sort.Slice(Cus, func(i, j int) bool {
+				return Cus[i].Id < Cus[j].Id
+			  })
+}
 func main() {
 	var Cus []Customer
-	f, err := excelize.OpenFile("prob5.xlsx")
+	_, error := os.Stat("prob5.json")
+	if error != nil{
+		f, err := excelize.OpenFile("prob5.xlsx")
 	 if err != nil {
         fmt.Println(err)
         return
     }
-	// fmt.Print(f)
+	// fmt.Println(f)
 	rows, err := f.GetRows("in")
     if err != nil {
         fmt.Println(err)
@@ -136,13 +153,18 @@ func main() {
 			case 6:
 				Cus[i-1].FullName =Cus[i-1].FirstName+" "+Cus[i-1].LastName 
 			
+			} 
 			}
-        }
-        // fmt.Println()
-}
-
-
-   var casee string
+			}
+			} else {
+				file, _ := os.ReadFile("prob5.json")
+				// fmt.Println(string(file))
+				err := json.Unmarshal(file, &Cus)
+				if err != nil {
+					panic(err)
+				}
+	}
+	 var casee string
 	// array := []int{}
 	
 	fmt.Printf("To Read user deatails 1\n")
@@ -153,7 +175,7 @@ func main() {
 	fmt.Printf("To exit please enter 6\n")
 	flag:=true
 	for flag {
-		fmt.Printf("Please enter the number\n")
+		fmt.Printf("\nPlease enter the number\n")
 		fmt.Scanln(&casee)
 		
 		switch casee {
@@ -167,13 +189,15 @@ func main() {
 			Cus1:=Customer{}
 			Cus = append(Cus,Cus1)
 			Add(Cus[:],-1)
+		case "5":
+			SortFullName(Cus[:])
 		case "6":
 			flag=false
 		default:
 			fmt.Println("Enter the number in between 1-6")
 		}
 	}
-	newval, err := json.MarshalIndent(Cus, "", "  ")
+	newval, _ := json.MarshalIndent(Cus, "", "  ")
 	filee, errs := os.Create("prob5.json")
 	if errs != nil {
 	   fmt.Println("Failed to create file:", errs)
