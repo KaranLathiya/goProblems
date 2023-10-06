@@ -1,9 +1,9 @@
-
 package main
 
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 )
 
 type Bird struct {
@@ -13,13 +13,12 @@ type Bird struct {
 
 func main() {
 	data, err := ioutil.ReadAll(resp.Body)
-	
+
 	if err == nil && data != nil {
 		err = json.Unmarshal(data, value)
 	}
-	
+
 	err = json.NewDecoder(resp.Body).Decode(value)
-	
 
 	birdJson := `{"birdType": "pigeon","what it does": "likes to perch on rocks"}`
 	var bird Bird

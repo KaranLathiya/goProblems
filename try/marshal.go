@@ -6,7 +6,7 @@ import (
 )
 
 type Bird struct {
-	Species     string `json:"birdType"`
+	Species string `json:"birdType"`
 	// we can set the "omitempty" property as part of the JSON tag
 	Description string `json:"what it does,omitempty"`
 }
@@ -17,10 +17,9 @@ type Bird struct {
 // 	Species     string `json:"-"`
 // }
 
-
 func main() {
 	pigeon := Bird{
-		Species:     "Pigeon",
+		Species: "Pigeon",
 	}
 
 	data, _ := json.Marshal(pigeon)
@@ -32,17 +31,14 @@ func main() {
 // 	Species:     "Pigeon",
 // 	Description: "likes to eat seed",
 //   }
-  
+
 //   // Now we pass a slice of two pigeons
 //   data, _ := json.Marshal([]*Bird{pigeon, pigeon})
 //   fmt.Println(string(data))
-  
 
 //   This will give the output:
 
 // [{"birdType":"Pigeon","what it does":"likes to eat seed"},{"birdType":"Pigeon","what it does":"likes to eat seed"}]
-
-
 
 // bird := Bird{
 // 	Species: "pigeon",
@@ -59,7 +55,6 @@ func main() {
 // 	"Species": "pigeon",
 // 	"Description": "likes to eat seed"
 // }
-
 
 type Dimensions struct {
 	Height int
@@ -85,8 +80,6 @@ type Dimensions struct {
 // 	// {"Species":"pigeon","Dimensions":"24x10"}
 // }
 
-
-
 // func main() {
 // 	// The keys need to be strings, the values can be
 // 	// any serializable value
@@ -98,7 +91,7 @@ type Dimensions struct {
 // 		"total birds": 2,
 // 	}
 
-// 	// JSON encoding is done the same way as before	
+// 	// JSON encoding is done the same way as before
 // 	data, _ := json.Marshal(birdData)
 // 	fmt.Println(string(data))
 // }

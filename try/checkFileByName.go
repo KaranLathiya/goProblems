@@ -1,15 +1,18 @@
 package main
+
 import (
 	"fmt"
-    "log"
-    "os"
+	"log"
+	"os"
 )
-func main() {
-    fileInfo, error := os.Stat("create.go")
 
-    if error != nil {
-        log.Fatal(error)
-    } else{
+func main() {
+	//  used when to know particular file exist or not and it returns file information like length ... if it exists
+	fileInfo, error := os.Stat("create.go")
+
+	if error != nil {
+		log.Fatal(error)
+	} else {
 		fmt.Println(fileInfo)
 	}
 }

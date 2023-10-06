@@ -24,15 +24,15 @@ func main() {
 	// Perform modification in new_map
 	new_map[96] = "Parrot"
 	new_map[98] = "Pig"
-    // Deleting keys
-    // Using delete function
-    delete(m_a_p, 90)
-    delete(m_a_p, 93)  
+	// Deleting keys
+	// Using delete function
+	delete(m_a_p, 90)
+	delete(m_a_p, 93)
 	// Checking the key is available
-    // or not in the m_a_p map
-    pet_name, ok := m_a_p[90]
-    fmt.Println("\nKey present or not:", ok)
-    fmt.Println("Value:", pet_name)
+	// or not in the m_a_p map
+	pet_name, ok := m_a_p[90]
+	fmt.Println("\nKey present or not:", ok)
+	fmt.Println("Value:", pet_name)
 
 	// Display after modification
 	fmt.Println("New map: ", new_map)
