@@ -19,26 +19,34 @@ func main() {
 
 	for {
 		select {
-		case v, open := <-ch:
+		case value, open := <-ch:
 			if !open {
 				fmt.Print(time.Now(), "done")
 				return
 			}
-			if v%2 == 0 {
-				fmt.Println(v, " is even")
-			} else {
-				fmt.Println(v, " is odd")
-			}
-			for i := 2; i < (v/2 + 1); i++ {
-				if v%i == 0 {
-					fmt.Println(v, "is non-prime")
-					break
-				} else if i == v/2 {
-					fmt.Println(v, "is prime")
-					break
-				}
-			}
-			fmt.Println(time.Now(), "received", v)
+			go evenOrOdd(value)
+			go primeOrNot(value)
+
+			fmt.Println(time.Now(), "received", value)
+		}
+	}
+}
+
+func evenOrOdd(v int) {
+	if v%2 == 0 {
+		fmt.Println(v, " is even")
+	} else {
+		fmt.Println(v, " is odd")
+	}
+}
+func primeOrNot(v int) {
+	for i := 2; i < (v/2 + 1); i++ {
+		if v%i == 0 {
+			fmt.Println(v, "is non-prime")
+			break
+		} else if i == v/2 {
+			fmt.Println(v, "is prime")
+			break
 		}
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"os"
 	"sort"
 	"strconv"
-
 	"github.com/xuri/excelize/v2"
 )
 
@@ -20,7 +19,7 @@ type Customer struct {
 	IpAddress string `json:"ipAddress"`
 }
 
-func Id(Cus []Customer) int {
+func Id() int {
 	var id int
 	number := -1
 	fmt.Printf("Please enter the ID number on you want to perform operation\n")
@@ -34,41 +33,35 @@ func Id(Cus []Customer) int {
 	}
 	if number == -1 {
 		fmt.Println("Invalid ID")
-		return -1
+		os.Exit(0)
 	}
 	return number
 }
-func Read(Cus []Customer) {
-	id := Id(Cus)
-	if id != -1 {
-		fmt.Println(Cus[id])
-	}
-}
-func Update(Cus []Customer) {
-	id := Id(Cus)
-	if id != -1 {
-		fmt.Println(Cus[id])
-		Add(Cus[:], id)
-	}
+func Read() {
+	id := Id()
+	fmt.Println(Cus[id])
 
 }
-func Remove(Cus []Customer) {
-	id := Id(Cus)
-	if id != -1 {
-		fmt.Println(Cus[id])
-	}
+func Update() {
+	id := Id()
+	fmt.Println(Cus[id])
+	Add(id)
+}
+
+func Remove() {
+	id := Id()
+	fmt.Println(Cus[id])
 	Cus = append(Cus[:id], Cus[id+1:len(Cus)]...)
 	fmt.Printf("Details successfully deleted")
 }
 
-func Add(Cus []Customer, code int) {
+func Add(code int) {
 	var id int
 	if code == -1 {
 		id = len(Cus)
 	} else {
 		id = code + 1
 	}
-	// fmt.Println(code,"DAS")
 	Cus[id-1].Id = id
 	var firstname, lastname, email, gender, ipaddress string
 	fmt.Printf("Please enter the first name\n")
@@ -94,7 +87,7 @@ func Add(Cus []Customer, code int) {
 	}
 
 }
-func SortFullName(Cus []Customer) {
+func SortByFullName() {
 	// objs.sort((a,b) => a.last_nom - b.last_nom)
 	// sort.Strings(Cus[3].FullName)
 	sort.Slice(Cus, func(i, j int) bool {
@@ -108,8 +101,26 @@ func SortFullName(Cus []Customer) {
 		return Cus[i].Id < Cus[j].Id
 	})
 }
+func updataFileData() {
+	data, _ := json.MarshalIndent(Cus, "", "  ")
+	dataFile, errs := os.Create("prob5.json")
+	if errs != nil {
+		fmt.Println("Failed to create file:", errs)
+		return
+	}
+	defer dataFile.Close()
+
+	// Write the string "Hello, World!" to the file
+	_, errs = dataFile.Write(data)
+	if errs != nil {
+		fmt.Println("Failed to write to file:", errs) //print the failed message
+		return
+	}
+}
+
+var Cus []Customer
+
 func main() {
-	var Cus []Customer
 	_, error := os.Stat("prob5.json")
 	if error != nil {
 		f, err := excelize.OpenFile("prob5.xlsx")
@@ -159,59 +170,42 @@ func main() {
 			}
 		}
 	} else {
-		file, _ := os.ReadFile("prob5.json")
-		// fmt.Println(string(file))
-		err := json.Unmarshal(file, &Cus)
+		fileData, _ := os.ReadFile("prob5.json")
+		err := json.Unmarshal(fileData, &Cus)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 	}
-	var casee string
-	// array := []int{}
-
+	var operation string
 	fmt.Printf("To Read user deatails 1\n")
 	fmt.Printf("To Update user deatails 2\n")
 	fmt.Printf("To Delete user deatails 3\n")
 	fmt.Printf("To Add user deatails 4\n")
 	fmt.Printf("To get all user details in ascending order of fullname 5\n")
 	fmt.Printf("To exit please enter 6\n")
-	flag := true
-	for flag {
+	complete := false
+	for !complete {
 		fmt.Printf("\nPlease enter the number\n")
-		fmt.Scanln(&casee)
+		fmt.Scanln(&operation)
 
-		switch casee {
+		switch operation {
 		case "1":
-			Read(Cus[:])
+			Read()
 		case "2":
-			Update(Cus[:])
+			Update()
 		case "3":
-			Remove(Cus[:])
+			Remove()
 		case "4":
-			Cus1 := Customer{}
-			Cus = append(Cus, Cus1)
-			Add(Cus[:], -1)
+			Add(-1) // -1 for new customer add or id for update
 		case "5":
-			SortFullName(Cus[:])
+			SortByFullName()
 		case "6":
-			flag = false
+			complete = true
 		default:
 			fmt.Println("Enter the number in between 1-6")
 		}
-	}
-	newval, _ := json.MarshalIndent(Cus, "", "  ")
-	filee, errs := os.Create("prob5.json")
-	if errs != nil {
-		fmt.Println("Failed to create file:", errs)
-		return
-	}
-	defer filee.Close()
-
-	// Write the string "Hello, World!" to the file
-	_, errs = filee.Write(newval)
-	if errs != nil {
-		fmt.Println("Failed to write to file:", errs) //print the failed message
-		return
+		updataFileData()
 	}
 
 }

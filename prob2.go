@@ -6,69 +6,35 @@ import (
 	"os"
 )
 
-type User struct {
-	Userid  int     `json:"userId"`
-	Name    string  `json:"name"`
-	Balance float64 `json:"balance"`
-}
-
-func balance(id int, Cus1 []User) {
-	bal := Cus1[id].Balance
-	fmt.Printf("Your Balance is %v\n", bal)
-}
-
-func withdraw(id int, Cus1 []User) {
-	fmt.Println("Please the enter the amount of withdraw")
-	var withdraw float64
-	fmt.Scanln(&withdraw)
-	bal := Cus1[id].Balance
-	if withdraw > bal {
-		fmt.Println("Your balance is insufficient")
-	} else if withdraw < 0 {
-		fmt.Println("Withdraw amount must be greater than 0")
-	} else {
-		Cus1[id].Balance -= withdraw
-		fmt.Printf("Withdrawn amount is %v\n Now, Your balance is %v\n", withdraw, Cus1[id].Balance)
-	}
-}
-func deposit(id int, Cus1 []User) {
-	fmt.Println("Please the enter the amount of deposit")
-	var deposit float64
-	fmt.Scanln(&deposit)
-	if deposit > 0 {
-		Cus1[id].Balance += deposit
-		fmt.Printf("Deposited amount is %v\n Now, Your balance is %v\n", deposit, Cus1[id].Balance)
-	} else {
-		fmt.Println("Deposit amount must be greater than 0")
-	}
-}
+var Customer []User
+var id int
 
 func main() {
-	file, error := os.ReadFile("prob2.json")
+	fileData, error := os.ReadFile("prob2.json")
 	if error != nil {
 		fmt.Printf("%v", error)
 		return
 	}
-	// fmt.Print(string(file))
-	var Cus1 []User
-	err := json.Unmarshal(file, &Cus1)
+	// fmt.Print(string(fileData))
+	err := json.Unmarshal(fileData, &Customer)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	var casee string
-	var id, number int
-	// array := []int{}
+	var operation string
+
+	var idFound bool
 	fmt.Printf("Please enter you ID number\n")
 	fmt.Scanln(&id)
-	for i := range Cus1 {
-		if Cus1[i].Userid == id {
-			number = i
-			fmt.Printf("Hello, %v\n", Cus1[i].Name)
+	for i := range Customer {
+		if Customer[i].Userid == id {
+			idFound = true
+			id = i
+			fmt.Printf("Hello, %v\n", Customer[id].Name)
 			break
 		}
 	}
-	if number == 0 {
+	if !idFound {
 		fmt.Println("Invalid ID")
 		return
 	}
@@ -79,36 +45,77 @@ func main() {
 	complete := true
 	for complete {
 		fmt.Printf("Please enter the number\n")
-		fmt.Scanln(&casee)
+		fmt.Scanln(&operation)
 
-		switch casee {
+		switch operation {
 		case "1":
-			balance(number, Cus1)
+			balance()
 		case "2":
-			withdraw(number, Cus1)
+			withdraw()
 		case "3":
-			deposit(number, Cus1)
+			deposit()
 		case "4":
 			complete = false
 		default:
 			fmt.Println("Enter the number in between 1-4")
 		}
+		updataFileData()
 	}
-	// fmt.Println(Cus1)
-	newval, err := json.MarshalIndent(Cus1, "", "  ")
+
+	fmt.Printf("Thank you, %v", Customer[id].Name)
+}
+
+type User struct {
+	Userid  int     `json:"userId"`
+	Name    string  `json:"name"`
+	Balance float64 `json:"balance"`
+}
+
+func balance() {
+	bal := Customer[id].Balance
+	fmt.Printf("Your Balance is %v\n", bal)
+}
+
+func withdraw() {
+	fmt.Println("Please the enter the amount of withdraw")
+	var withdraw float64
+	fmt.Scanln(&withdraw)
+	bal := Customer[id].Balance
+	if withdraw > bal {
+		fmt.Println("Your balance is insufficient")
+	} else if withdraw < 0 {
+		fmt.Println("Withdraw amount must be greater than 0")
+	} else {
+		Customer[id].Balance -= withdraw
+		fmt.Printf("Withdrawn amount is %v\n Now, Your balance is %v\n", withdraw, Customer[id].Balance)
+	}
+}
+func deposit() {
+	fmt.Println("Please the enter the amount of deposit")
+	var deposit float64
+	fmt.Scanln(&deposit)
+	if deposit > 0 {
+		Customer[id].Balance += deposit
+		fmt.Printf("Deposited amount is %v\n Now, Your balance is %v\n", deposit, Customer[id].Balance)
+	} else {
+		fmt.Println("Deposit amount must be greater than 0")
+	}
+}
+func updataFileData() {
+	// fmt.Println(Customer)
+	updated_data, _ := json.MarshalIndent(Customer, "", "  ")
 	// fmt.Print(string(newval))
-	filee, errs := os.Create("prob2.json")
+	newFile, errs := os.Create("prob2.json")
 	if errs != nil {
 		fmt.Println("Failed to create file:", errs)
 		return
 	}
-	defer filee.Close()
+	defer newFile.Close()
 
 	// Write the string "Hello, World!" to the file
-	_, errs = filee.Write(newval)
+	_, errs = newFile.Write(updated_data)
 	if errs != nil {
 		fmt.Println("Failed to write to file:", errs) //print the failed message
 		return
 	}
-	fmt.Printf("Thank you, %v", Cus1[number].Name)
 }
