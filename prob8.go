@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 	// "strconv"
 )
 
 var pic []Photo
-var photoId int
+var newpic []Photo
 
 type Photo struct {
 	PhotoID   int    `json:"photoID"`
@@ -19,34 +18,6 @@ type Photo struct {
 }
 
 func main() {
-	var wg sync.WaitGroup
-	// i:=1
-	// photoname:="image1.jpg"
-	for {
-		wg.Add(1)
-		go readData(&wg)
-		wg.Wait()
-		// time.Sleep(30 * time.Second)
-		pic1 := Photo{PhotoID: 1111, PhotoName: "photoname", PhotoSize: "1.8MB"}
-		pic = append(pic, pic1)
-		wg.Add(1)
-
-		go updateData(&wg)
-
-		fmt.Println("Waiting for goroutines to finish...")
-		wg.Wait()
-		fmt.Println("Done!")
-		time.Sleep(30 * time.Second)
-		// i+=1
-		// string_i := strconv.Itoa(i)
-		// photoname="image"+string_i+".jpg"
-
-	}
-}
-
-func readData(wg *sync.WaitGroup) {
-	defer wg.Done()
-
 	fileData, error := os.ReadFile("prob8.json")
 	if error != nil {
 		fmt.Printf("%v", error)
@@ -58,15 +29,42 @@ func readData(wg *sync.WaitGroup) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Print(pic)
+	ch := make(chan Photo)
+	updated_ch := make(chan Photo)
+	for i := 0; i < len(pic); i++ {
+
+		go readData(ch, i)
+		go updateData(ch, i, updated_ch)
+		go storeData(updated_ch, i)
+
+		fmt.Println("Waiting for goroutines to finish...")
+		fmt.Println("Done!")
+
+		time.Sleep(1 * time.Microsecond)
+	}
+	close(ch)
+	close(updated_ch)
 }
 
-func updateData(wg *sync.WaitGroup) {
-	defer wg.Done()
+func readData(ch chan Photo, index int) {
+	fmt.Println("Reading the data of ", index+1)
+	ch <- pic[index]
+}
 
-	updated_data, _ := json.MarshalIndent(pic, "", "  ")
+func updateData(ch chan Photo, index int, updated_ch chan Photo) {
+	fmt.Println("updating the data of ", index+1)
+	createdPic := <-ch
+	createdPic.PhotoSize = "2.8MB"
+	updated_ch <- createdPic
+}
+
+func storeData(updated_ch chan Photo, index int) {
+	fmt.Println("Storing the data of ", index+1)
+	updatedPic := <-updated_ch
+	newpic = append(newpic, updatedPic)
+	updated_data, _ := json.MarshalIndent(newpic, "", "  ")
 	// fmt.Print(string(newval))
-	newFile, errs := os.Create("prob8.json")
+	newFile, errs := os.Create("updated_prob8.json")
 	if errs != nil {
 		fmt.Println("Failed to create file:", errs)
 		return
