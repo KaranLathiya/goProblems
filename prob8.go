@@ -40,7 +40,7 @@ func main() {
 		fmt.Println("Waiting for goroutines to finish...")
 		fmt.Println("Done!")
 
-		time.Sleep(1 * time.Microsecond)
+		time.Sleep(2 * time.Second)
 	}
 	close(ch)
 	close(updated_ch)
